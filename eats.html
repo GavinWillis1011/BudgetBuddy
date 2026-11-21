@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>College Budget Buddy | Cheap Eats</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="container-fluid py-4">
+        <h1>College Budget Buddy</h1>
+        <p>Find affordable food and save money while eating well.</p>
+    </header>
+
+    <!-- NAVIGATION -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+
+            <a class="navbar-brand" href="index.html">
+                College Budget Buddy
+            </a>
+
+            <div class="navbar-nav">
+                <a class="nav-link" href="index.html">My Budget</a>
+                <a class="nav-link active" href="eats.html">Cheap Eats</a>
+                <a class="nav-link" href="savings.html">Savings Goals</a>
+            </div>
+
+            <!-- Dark mode functionality will be added with JavaScript -->
+            <button class="btn" type="button" id="themeToggle">
+                Dark Mode
+            </button>
+
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container my-4">
+
+        <h2>Cheap Eats</h2>
+        <p>Discover affordable places to eat and recipes to make at home.</p>
+
+        <!-- NEARBY FOOD MAP -->
+        <section class="mb-5" aria-labelledby="mapHeading">
+
+            <h3 id="mapHeading">Find Food Near You</h3>
+
+            <p>
+                Explore nearby restaurants and affordable food options.
+            </p>
+
+            <!-- Map filters -->
+            <div class="row mb-3">
+
+                <div class="col-md-6 mb-2">
+                    <label for="foodType" class="form-label">Food Type</label>
+
+                    <select class="form-select" id="foodType">
+                        <option value="all">All Food</option>
+                        <option value="fast-food">Fast Food</option>
+                        <option value="restaurant">Restaurants</option>
+                        <option value="cafe">Cafes</option>
+                        <option value="grocery">Grocery Stores</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-2">
+                    <label for="priceFilter" class="form-label">Price Range</label>
+
+                    <select class="form-select" id="priceFilter">
+                        <option value="all">Any Price</option>
+                        <option value="cheap">Budget Friendly</option>
+                        <option value="moderate">Moderate</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Map placeholder for future map API -->
+            <div id="foodMap" class="border rounded p-4 text-center">
+
+                <h4>Food Map</h4>
+
+                <p>
+                    Nearby food locations will appear here.
+                </p>
+
+                <p>
+                    Map integration coming soon!
+                </p>
+
+            </div>
+
+            <!-- Nearby restaurant results -->
+            <div class="mt-3">
+
+                <h4>Nearby Food Locations</h4>
+
+                <div id="restaurantResults">
+                    <p>Restaurant information will appear here.</p>
+                </div>
+
+            </div>
+
+        </section>
+
+        <hr>
+
+        <!-- RECIPE SEARCH -->
+        <section class="mb-5" aria-labelledby="recipeHeading">
+
+            <h3 id="recipeHeading">Find Affordable Recipes</h3>
+
+            <p>
+                Looking to cook instead? Search for recipes using ingredients
+                or meal names.
+            </p>
+
+            <!-- Recipe search form -->
+            <form id="recipeSearchForm">
+
+                <div class="mb-3">
+                    <label for="recipeSearch" class="form-label">
+                        Search Recipes
+                    </label>
+
+                    <input type="text"
+                        class="form-control"
+                        id="recipeSearch"
+                        placeholder="Try chicken, pasta, or soup...">
+                </div>
+
+                <div class="mb-3">
+                    <label for="mealType" class="form-label">
+                        Meal Type
+                    </label>
+
+                    <select class="form-select" id="mealType">
+                        <option value="all">All Meals</option>
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner">Dinner</option>
+                        <option value="dessert">Dessert</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Search Recipes
+                </button>
+
+            </form>
+
+            <!-- Recipe results from TheMealDB -->
+            <div class="mt-4">
+
+                <h4>Recipe Results</h4>
+
+                <div id="recipeResults" class="row">
+
+                    <p>
+                        Search for a recipe to see results here.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <hr>
+
+        <!-- RECIPE DETAILS -->
+        <section class="mb-5" aria-labelledby="detailsHeading">
+
+            <h3 id="detailsHeading">Recipe Details</h3>
+
+            <div id="recipeDetails">
+
+                <p>
+                    Select a recipe to view its ingredients
+                    and preparation instructions.
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- WEEKLY MEAL PLAN -->
+        <section class="mb-4" aria-labelledby="mealPlanHeading">
+
+            <h3 id="mealPlanHeading">Weekly Meal Plan</h3>
+
+            <p>
+                Keep track of affordable meals you want to make this week.
+            </p>
+
+            <div id="weeklyMealPlan">
+
+                <p>No meals added to your plan yet.</p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="container-fluid text-center py-4">
+        <p>GW Final Project</p>
+    </footer>
+
+</body>
+</html>

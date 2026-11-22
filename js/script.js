@@ -740,3 +740,264 @@ displayMealPlan();
     }
 
 })();
+
+// ==========================================
+// SAVINGS GOALS
+// ==========================================
+
+const goalForm = document.getElementById("goalForm");
+const savingsGoalList = document.getElementById("savingsGoalList");
+
+// Load saved goals from LocalStorage
+let savingsGoals = JSON.parse(localStorage.getItem("savingsGoals")) || [];
+
+// Save goals to LocalStorage
+function saveSavingsGoals() {
+    localStorage.setItem("savingsGoals", JSON.stringify(savingsGoals));
+}
+
+// Update the savings summary
+function updateSavingsSummary() {
+    const totalSaved = savingsGoals.reduce(
+        (total, goal) => total + Number(goal.saved),
+        0
+    );
+
+    const activeGoals = savingsGoals.filter(
+        goal => Number(goal.saved) < Number(goal.target)
+    );
+
+    const totalSavedElement = document.getElementById("totalSaved");
+    const activeGoalsElement = document.getElementById("activeGoals");
+    const nextMilestoneElement = document.getElementById("nextMilestone");
+
+    if (totalSavedElement) {
+        totalSavedElement.textContent = formatMoney(totalSaved);
+    }
+
+    if (activeGoalsElement) {
+        activeGoalsElement.textContent = activeGoals.length;
+    }
+
+    if (nextMilestoneElement) {
+        if (activeGoals.length === 0) {
+            nextMilestoneElement.textContent = "No active goals";
+        } else {
+            // Find the goal closest to completion
+            const nextGoal = activeGoals.reduce((closest, goal) => {
+                const goalProgress = goal.saved / goal.target;
+                const closestProgress = closest.saved / closest.target;
+
+                return goalProgress > closestProgress ? goal : closest;
+            });
+
+            nextMilestoneElement.textContent =
+                `${nextGoal.name}: ${formatMoney(nextGoal.target)}`;
+        }
+    }
+}
+
+// Display all savings goals
+function displaySavingsGoals() {
+    if (!savingsGoalList) return;
+
+    savingsGoalList.innerHTML = "";
+
+    if (savingsGoals.length === 0) {
+        const message = document.createElement("p");
+        message.textContent =
+            "You haven't created any savings goals yet. Create one above to get started!";
+
+        savingsGoalList.appendChild(message);
+        updateSavingsSummary();
+        return;
+    }
+
+    savingsGoals.forEach(goal => {
+        const saved = Number(goal.saved) || 0;
+        const target = Number(goal.target) || 0;
+
+        const percentage = target > 0
+            ? Math.min((saved / target) * 100, 100)
+            : 0;
+
+        const completed = saved >= target;
+
+        const card = document.createElement("div");
+        card.className = "card p-3 mb-3";
+
+        // Goal title
+        const heading = document.createElement("h4");
+        heading.textContent = goal.name;
+
+        // Goal date
+        const dateText = document.createElement("p");
+
+        dateText.textContent = goal.date
+            ? `Target date: ${goal.date}`
+            : "No target date set";
+
+        // Saved amount
+        const amountText = document.createElement("p");
+        amountText.textContent =
+            `${formatMoney(saved)} saved out of ${formatMoney(target)}`;
+
+        // Progress bar
+        const progressContainer = document.createElement("div");
+        progressContainer.className = "progress mb-2";
+        progressContainer.setAttribute("role", "progressbar");
+        progressContainer.setAttribute(
+            "aria-label",
+            `Progress for ${goal.name}`
+        );
+        progressContainer.setAttribute("aria-valuenow", Math.round(percentage));
+        progressContainer.setAttribute("aria-valuemin", "0");
+        progressContainer.setAttribute("aria-valuemax", "100");
+
+        const progressBar = document.createElement("div");
+        progressBar.className = "progress-bar";
+        progressBar.style.width = `${percentage}%`;
+        progressBar.textContent = `${Math.round(percentage)}%`;
+
+        progressContainer.appendChild(progressBar);
+
+        // Completion message
+        const status = document.createElement("p");
+
+        if (completed) {
+            status.textContent = "Goal completed! Congratulations!";
+        } else {
+            status.textContent =
+                `${formatMoney(target - saved)} left to reach your goal.`;
+        }
+
+        // Deposit form
+        const depositForm = document.createElement("form");
+        depositForm.className = "d-flex flex-wrap gap-2 mb-2";
+        depositForm.dataset.goalId = goal.id;
+
+        const depositInput = document.createElement("input");
+        depositInput.type = "number";
+        depositInput.min = "0.01";
+        depositInput.step = "0.01";
+        depositInput.placeholder = "Deposit amount";
+        depositInput.className = "form-control";
+        depositInput.setAttribute(
+            "aria-label",
+            `Deposit amount for ${goal.name}`
+        );
+        depositInput.required = true;
+
+        const depositButton = document.createElement("button");
+        depositButton.type = "submit";
+        depositButton.className = "btn btn-primary";
+        depositButton.textContent = "Add Deposit";
+
+        depositForm.append(depositInput, depositButton);
+
+        // Delete goal button
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "btn btn-outline-danger";
+        deleteButton.textContent = "Delete Goal";
+        deleteButton.dataset.deleteGoal = goal.id;
+
+        card.append(
+            heading,
+            dateText,
+            amountText,
+            progressContainer,
+            status
+        );
+
+        if (!completed) {
+            card.appendChild(depositForm);
+        }
+
+        card.appendChild(deleteButton);
+        savingsGoalList.appendChild(card);
+    });
+
+    updateSavingsSummary();
+}
+
+// Create a new savings goal
+if (goalForm) {
+    goalForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const name = document.getElementById("goalName").value.trim();
+        const target = Number(document.getElementById("targetAmount").value);
+        const date = document.getElementById("targetDate").value;
+
+        if (!name || !Number.isFinite(target) || target <= 0) {
+            alert("Please enter a valid goal name and target amount.");
+            return;
+        }
+
+        const newGoal = {
+            id: Date.now().toString() + Math.random().toString(16).slice(2),
+            name: name,
+            target: target,
+            saved: 0,
+            date: date
+        };
+
+        savingsGoals.push(newGoal);
+
+        saveSavingsGoals();
+        displaySavingsGoals();
+
+        goalForm.reset();
+    });
+}
+
+// Add deposits and delete goals
+if (savingsGoalList) {
+    savingsGoalList.addEventListener("submit", function (event) {
+        const form = event.target.closest("form[data-goal-id]");
+        if (!form) return;
+
+        event.preventDefault();
+
+        const goal = savingsGoals.find(
+            item => item.id === form.dataset.goalId
+        );
+
+        if (!goal) return;
+
+        const depositInput = form.querySelector("input");
+        const deposit = Number(depositInput.value);
+
+        if (!Number.isFinite(deposit) || deposit <= 0) {
+            alert("Please enter a deposit greater than zero.");
+            return;
+        }
+
+        goal.saved = Number(goal.saved) + deposit;
+
+        saveSavingsGoals();
+        displaySavingsGoals();
+    });
+
+    savingsGoalList.addEventListener("click", function (event) {
+        const button = event.target.closest("[data-delete-goal]");
+        if (!button) return;
+
+        const goalId = button.dataset.deleteGoal;
+
+        if (!confirm("Are you sure you want to delete this savings goal?")) {
+            return;
+        }
+
+        savingsGoals = savingsGoals.filter(
+            goal => goal.id !== goalId
+        );
+
+        saveSavingsGoals();
+        displaySavingsGoals();
+    });
+}
+
+// Load savings goals when the page opens
+displaySavingsGoals();

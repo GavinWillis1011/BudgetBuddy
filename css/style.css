@@ -376,7 +376,10 @@ body.dark-mode hr {
     }
 
     #foodMap {
-        min-height: 250px;
+       width: 100%;
+       height: 350px;
+       min-height: 350px;
+       border-radius: 12px;
     }
 
     main {

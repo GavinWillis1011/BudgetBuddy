@@ -511,3 +511,232 @@ if (mealType) {
 }
 
 displayMealPlan();
+
+// ==========================================
+// NEARBY FOOD MAP - LEAFLET + OPENSTREETMAP
+// ==========================================
+
+(function () {
+    const mapElement = document.getElementById("foodMap");
+
+    // Only run this feature on the Cheap Eats page
+    if (!mapElement || typeof L === "undefined") {
+        return;
+    }
+
+    const locationButton = document.getElementById("locationButton");
+    const mapStatus = document.getElementById("mapStatus");
+    const restaurantResults = document.getElementById("restaurantResults");
+
+    // Start with a general map view, not the user's location
+    const map = L.map("foodMap").setView([39.5, -98.35], 4);
+
+    // Add OpenStreetMap map tiles
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    let foodMarkers = L.layerGroup().addTo(map);
+
+    // Calculate distance between two coordinates
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const earthRadius = 6371;
+        const toRadians = degrees => degrees * Math.PI / 180;
+
+        const dLat = toRadians(lat2 - lat1);
+        const dLon = toRadians(lon2 - lon1);
+
+        const a =
+            Math.sin(dLat / 2) ** 2 +
+            Math.cos(toRadians(lat1)) *
+            Math.cos(toRadians(lat2)) *
+            Math.sin(dLon / 2) ** 2;
+
+        return earthRadius * 2 *
+            Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    // Create a safe popup for a food location
+    function createPopup(name, type, address) {
+        const popup = document.createElement("div");
+
+        const title = document.createElement("strong");
+        title.textContent = name;
+
+        const category = document.createElement("p");
+        category.textContent = type;
+
+        popup.appendChild(title);
+        popup.appendChild(category);
+
+        if (address) {
+            const addressText = document.createElement("p");
+            addressText.textContent = address;
+            popup.appendChild(addressText);
+        }
+
+        return popup;
+    }
+
+    // Find nearby food locations using OpenStreetMap data
+    async function findNearbyFood(latitude, longitude) {
+        mapStatus.textContent = "Looking for nearby food places...";
+
+        if (restaurantResults) {
+            restaurantResults.innerHTML = "";
+        }
+
+        foodMarkers.clearLayers();
+
+        const query = `
+            [out:json][timeout:25];
+            (
+                node["amenity"~"^(restaurant|cafe|fast_food)$"]
+                    (around:1500,${latitude},${longitude});
+                way["amenity"~"^(restaurant|cafe|fast_food)$"]
+                    (around:1500,${latitude},${longitude});
+                relation["amenity"~"^(restaurant|cafe|fast_food)$"]
+                    (around:1500,${latitude},${longitude});
+            );
+            out center tags;
+        `;
+
+        try {
+            const response = await fetch(
+                "https://overpass-api.de/api/interpreter",
+                {
+                    method: "POST",
+                    body: "data=" + encodeURIComponent(query)
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("The food search service is unavailable.");
+            }
+
+            const data = await response.json();
+
+            const places = data.elements || [];
+
+            let displayedPlaces = 0;
+
+            places.forEach(place => {
+                const lat = place.lat ?? place.center?.lat;
+                const lon = place.lon ?? place.center?.lon;
+
+                if (lat === undefined || lon === undefined) {
+                    return;
+                }
+
+                const name = place.tags?.name || "Unnamed food place";
+                const type = place.tags?.cuisine ||
+                    place.tags?.amenity ||
+                    "Food location";
+
+                const distance = calculateDistance(
+                    latitude,
+                    longitude,
+                    lat,
+                    lon
+                );
+
+                const address = [
+                    place.tags?.["addr:housenumber"],
+                    place.tags?.["addr:street"]
+                ].filter(Boolean).join(" ");
+
+                const marker = L.marker([lat, lon]).addTo(foodMarkers);
+
+                marker.bindPopup(createPopup(name, type, address));
+
+                if (restaurantResults && displayedPlaces < 30) {
+                    const result = document.createElement("div");
+                    result.className = "restaurant-result";
+
+                    const title = document.createElement("h5");
+                    title.textContent = name;
+
+                    const description = document.createElement("p");
+                    description.textContent =
+                        type + " • " + distance.toFixed(2) + " km away";
+
+                    result.appendChild(title);
+                    result.appendChild(description);
+
+                    result.addEventListener("click", () => {
+                        map.setView([lat, lon], 17);
+                        marker.openPopup();
+                    });
+
+                    restaurantResults.appendChild(result);
+                }
+
+                displayedPlaces++;
+            });
+
+            if (displayedPlaces === 0) {
+                mapStatus.textContent =
+                    "No food places found within 1.5 km. Try another location.";
+            } else {
+                mapStatus.textContent =
+                    `Found ${displayedPlaces} nearby food places!`;
+            }
+
+        } catch (error) {
+            console.error("Food map error:", error);
+
+            mapStatus.textContent =
+                "Could not load nearby food places. Please try again later.";
+        }
+    }
+
+    // Ask the browser for permission to use the user's location
+    if (locationButton) {
+        locationButton.addEventListener("click", () => {
+            if (!navigator.geolocation) {
+                mapStatus.textContent =
+                    "Your browser does not support location services.";
+                return;
+            }
+
+            mapStatus.textContent = "Requesting your location...";
+
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    map.setView([latitude, longitude], 15);
+
+                    L.circleMarker([latitude, longitude], {
+                        radius: 9,
+                        color: "#315B43",
+                        fillColor: "#6FAF83",
+                        fillOpacity: 1
+                    })
+                    .addTo(map)
+                    .bindPopup("Your approximate location");
+
+                    findNearbyFood(latitude, longitude);
+                },
+
+                error => {
+                    console.error("Location error:", error);
+
+                    mapStatus.textContent =
+                        "Location permission was denied or unavailable. " +
+                        "You can still explore the map.";
+                },
+
+                {
+                    enableHighAccuracy: false,
+                    timeout: 10000,
+                    maximumAge: 60000
+                }
+            );
+        });
+    }
+
+})();

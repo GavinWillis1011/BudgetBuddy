@@ -1,0 +1,386 @@
+
+/* =================================
+   COLLEGE BUDGET BUDDY
+   Main Stylesheet
+================================= */
+
+
+/* =================================
+   1. GLOBAL STYLES
+================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #F3F5EF;
+    color: #26382D;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+h1, h2, h3, h4 {
+    color: #315B43;
+    font-weight: 600;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+section {
+    margin-top: 30px;
+}
+
+
+/* =================================
+   2. HEADER
+================================= */
+
+header {
+    background-color: #315B43;
+    color: white;
+    text-align: center;
+}
+
+header h1 {
+    color: white;
+    margin-bottom: 5px;
+}
+
+header p {
+    margin-bottom: 0;
+    color: #E3EFE5;
+}
+
+
+/* =================================
+   3. NAVIGATION
+================================= */
+
+.navbar {
+    background-color: #DCE9DC;
+    border-bottom: 1px solid #C5D6C7;
+}
+
+.navbar-brand {
+    color: #244532;
+    font-weight: bold;
+}
+
+.nav-link {
+    color: #315B43;
+    font-weight: 500;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #163B26;
+    text-decoration: underline;
+}
+
+#themeToggle {
+    background-color: #315B43;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+}
+
+#themeToggle:hover {
+    background-color: #244532;
+}
+
+/* NAVIGATION SPACING */
+.navbar-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.nav-link {
+    padding: 8px 14px !important;
+    border-radius: 8px;
+}
+
+/* RESPONSIVE NAVIGATION */
+@media (max-width: 768px) {
+    .navbar-nav {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+
+    .nav-link {
+        display: block;
+        padding: 10px 14px !important;
+    }
+}
+/* =================================
+   4. MAIN CONTENT
+================================= */
+
+main {
+    min-height: 65vh;
+}
+
+main > h2 {
+    margin-top: 15px;
+}
+
+
+/* =================================
+   5. CARDS
+================================= */
+
+.card {
+    background-color: white;
+    border: 1px solid #E0E7DE;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    height: 100%;
+}
+
+.card h4 {
+    font-size: 1.1rem;
+}
+
+.card p {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+
+/* =================================
+   6. FORMS AND BUTTONS
+================================= */
+
+.form-control,
+.form-select {
+    border: 1px solid #C9D5CA;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #547D5D;
+    box-shadow: 0 0 0 0.2rem rgba(49, 91, 67, 0.15);
+}
+
+.form-label {
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: #315B43;
+    border-color: #315B43;
+}
+
+.btn-primary:hover {
+    background-color: #244532;
+    border-color: #244532;
+}
+
+
+/* =================================
+   7. TRANSACTION TABLE
+================================= */
+
+.table {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead {
+    background-color: #DCE9DC;
+    color: #244532;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+}
+
+
+/* =================================
+   8. CHEAP EATS MAP
+================================= */
+
+#foodMap {
+    min-height: 350px;
+    background-color: #E2EBDD;
+    border: 2px dashed #9EB59F !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#foodMap p {
+    color: #526B59;
+}
+
+
+/* =================================
+   9. RECIPE RESULTS
+================================= */
+
+#recipeResults {
+    margin-top: 15px;
+}
+
+#recipeResults .card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px 10px 0 0;
+}
+
+
+/* =================================
+   10. SAVINGS GOALS
+================================= */
+
+#savingsGoalList .card {
+    margin-bottom: 15px;
+}
+
+.progress {
+    height: 12px;
+    background-color: #DCE9DC;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    background-color: #477A50;
+}
+
+
+/* =================================
+   11. FOOTER
+================================= */
+
+footer {
+    background-color: #315B43;
+    color: white;
+    margin-top: 40px;
+}
+
+footer p {
+    margin-bottom: 5px;
+}
+
+
+/* =================================
+   12. DARK MODE
+   JavaScript will toggle this class.
+================================= */
+
+body.dark-mode {
+    background-color: #17241D;
+    color: #E2EAE3;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4 {
+    color: #B9D6BE;
+}
+
+body.dark-mode .navbar {
+    background-color: #263D30;
+    border-color: #385743;
+}
+
+body.dark-mode .navbar-brand,
+body.dark-mode .nav-link {
+    color: #E2EAE3;
+}
+
+body.dark-mode .nav-link:hover,
+body.dark-mode .nav-link.active {
+    color: #B9D6BE;
+}
+
+body.dark-mode .card,
+body.dark-mode .table {
+    background-color: #26352C;
+    color: #E2EAE3;
+    border-color: #405546;
+}
+
+body.dark-mode .table thead {
+    background-color: #385743;
+    color: white;
+}
+
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+    background-color: #26352C;
+    color: white;
+    border-color: #526B59;
+}
+
+body.dark-mode .form-control::placeholder {
+    color: #AAB9AD;
+}
+
+body.dark-mode #foodMap {
+    background-color: #263D30;
+    border-color: #668C6C !important;
+}
+
+body.dark-mode #foodMap p {
+    color: #D0E0D3;
+}
+
+body.dark-mode .progress {
+    background-color: #405546;
+}
+
+body.dark-mode hr {
+    border-color: #526B59;
+}
+
+
+/* =================================
+   13. RESPONSIVE DESIGN
+================================= */
+
+@media (max-width: 768px) {
+
+    header {
+        padding: 20px 10px;
+    }
+
+    .navbar .container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .navbar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    #themeToggle {
+        margin-top: 5px;
+    }
+
+    #foodMap {
+        min-height: 250px;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+}
